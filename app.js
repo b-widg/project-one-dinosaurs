@@ -10,12 +10,6 @@ const Dino = function (species, weight, height, diet, where, when, fact) {
   this.imagePath = `./images/${species}.png`.toLowerCase();
 };
 
-(async () => {
-  const res = await fetch('./dino.json');
-  const dinoData = await res.json();
-  makeDinos(dinoData);
-})();
-
 const makeDinos = (dinoData) => {
   const dinoArray = [];
 
@@ -31,49 +25,118 @@ const makeDinos = (dinoData) => {
       // dino also has a path to it's image created by the constructor
       // imagePath = `./images/${species}.png`.toLowerCase();
     );
-
     dinoArray.push(dino);
   });
+  return dinoArray;
 };
 
-(getFormData = () => {
+const makeHuman = function (userInput) {
+  const human = {
+    species: userInput.name,
+    feet: parseInt(userInput.feet),
+    inches: parseInt(userInput.inches),
+    weight: parseInt(userInput.weight),
+    diet: userInput.diet,
+    height: parseInt(userInput.feet) * 12 + parseInt(userInput.inches),
+    imagePath: `./images/human.png`,
+  };
+  return human;
+};
+
+//add click listner to compare button
+(window.onload = () => {
   const compareBtn = document.getElementById('compare-btn');
+  console.log('compareBtn:', compareBtn);
+  compareBtn.addEventListener('click', (e) => {
+    const userInput = getFormData();
+    const human = makeHuman(userInput); // make human object from data submitted by user
+    toggleFormVisibility();
+    const getDinoData = async () => fetchDinoJson();
+    getDinoData().then((res) => {
+      const dinoArray = makeDinos(res);
+      makeTiles(dinoArray, human);
+    });
+  });
+})();
+
+const getFormData = () => {
+  // get array of all form elements
   const formElements = Array.from(
     document.querySelectorAll('#dino-compare input, select')
   );
-
-  compareBtn.addEventListener('click', (e) => {
-    const formData = formElements.reduce(
-      (accumulator, currentVal) => ({
-        ...accumulator,
-        [currentVal.id]: currentVal.value,
-      }),
-      {} // initial value of accumulator is empty object
-    );
-    console.log('formData:', formData);
-    makeHuman(formData); // make human object from data submitted by user
-    clearFormData(formElements); // clear form after form submission
-    toggleFormVisibility(); // Hide form after submission
-  });
-  // TODO remove from DOM
-  // TODO validate data
-})();
+  // gather unser input from form values and place in array
+  const formData = formElements.reduce(
+    (accumulator, currentVal) => ({
+      ...accumulator,
+      [currentVal.id]: currentVal.value,
+    }),
+    {} // initial value of accumulator is empty object
+  );
+  clearFormData(formElements); // clear form after info gathered
+  return formData;
+};
 
 const clearFormData = (formElements) => {
   formElements.forEach((element) => (element.value = ''));
 };
 
-const makeHuman = function (formData) {
-  const human = {
-    name: formData.name,
-    feet: formData.feet,
-    inches: formData.inches,
-    weight: formData.weight,
-    diet: formData.diet,
-    height: parseInt(feet) * 12 + parseInt(inches),
-    imagePath: `./images/human.png`,
-  };
-  console.log('human:', human);
+async function fetchDinoJson() {
+  const res = await fetch('./dino.json');
+  const dinoData = await res.json();
+  console.log('dinoData from fetch:', dinoData);
+  return dinoData;
+}
+
+const toggleFormVisibility = () => {
+  const form = document.getElementById('dino-compare');
+  form.style.display == ''
+    ? (form.style.display = 'none')
+    : (form.style.display = '');
+};
+
+const makeTiles = (dinoArray, humanObj) => {
+  const tileDataArray = randomizeArray(dinoArray);
+  tileDataArray.splice(4, 0, humanObj); // after randomizing dino objects, add human object in 5th position
+
+  const grid = document.getElementById('grid');
+
+  tileDataArray.forEach((element) => {
+    const tile = document.createElement('div');
+    grid.appendChild(tile);
+    tile.classList.add('grid-item');
+
+    const tileName = document.createElement('h3');
+    tileName.innerHTML = element.species;
+    tile.appendChild(tileName);
+
+    const tileImage = document.createElement('img');
+    tile.appendChild(tileImage).setAttribute('src', element.imagePath);
+
+    const tileFact = document.createElement('p');
+    tileFact.innerHTML = element.fact;
+    tile.appendChild(tileFact);
+
+    if (element.fact === undefined) {
+      tileFact.style.display = 'none';
+    }
+
+    if (tileName === 'Pigeon') {
+      tileFact.innerHTML = 'All birds are dinosaurs.';
+    }
+  });
+};
+
+const randomizeArray = (originalArray) => {
+  const randomizedArray = [];
+
+  while (originalArray.length > 0) {
+    const getRandomIndex = () =>
+      Math.floor(Math.random() * originalArray.length); //generate random index based on current length of array
+    const randomIndex = getRandomIndex();
+    randomizedArray.push(originalArray[randomIndex]); //add value at index to new array
+    originalArray.splice(randomIndex, 1); // remove value from old array. splice(index to remove, number of elements to remove)
+  }
+  return randomizedArray;
 };
 
 // Create Dino Compare Method 1
@@ -85,26 +148,4 @@ const makeHuman = function (formData) {
 // Create Dino Compare Method 3
 // NOTE: Weight in JSON file is in lbs, height in inches.
 
-// Generate Tiles for each Dino in Array
-
-// Add tiles to DOM
-
-// Remove form from screen
-//chose visibility = hidden over display = none to keep footer from jumping up
-// when form is hidden.
 // TODO try to fix delay in hiding button when hiding form
-const toggleFormVisibility = () => {
-  const form = document.getElementById('dino-compare');
-  form.style.visibility == ''
-    ? (form.style.visibility = 'hidden')
-    : (form.style.visibility = '');
-};
-
-// Function only to test toggleFormVisibility() by clicking "How do you compare?" header.
-// (() => {
-//   document
-//     .querySelector('body > header:nth-child(1) > h3:nth-child(3)')
-//     .addEventListener('click', (e) => toggleFormVisibility());
-// })();
-
-// On button click, prepare and display infographic
