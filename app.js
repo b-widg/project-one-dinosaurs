@@ -1,16 +1,56 @@
 // Create Dino Constructor
-const Dino = function (species, weight, height, diet, where, when, fact) {
+const Dino = function (
+  species,
+  weight,
+  height,
+  diet,
+  where,
+  when,
+  fact,
+  human
+) {
   this.species = species;
   this.weight = weight;
   this.height = height;
-  this.diet = diet;
-  this.where = where;
-  this.when = when;
+  this.diet = diet.toLowerCase();
+  this.where = `${this.species} lived in the following continents: ${where}`;
+  this.when = `${this.species} lived during the ${when} period.`;
   this.fact = fact;
   this.imagePath = `./images/${species}.png`.toLowerCase();
+  this.compareDiet = function () {
+    return human.diet === this.diet
+      ? `${human.species} and ${this.species} are both ${this.diet}s.`
+      : `${human.species} is a ${human.diet}, but ${this.species} was a ${this.diet}.`;
+  };
+  this.compareWeight = function () {
+    return this.weight > human.weight
+      ? `At ${this.weight} pounds ${this.species} was ${(
+          parseFloat((this.weight - human.weight) / human.weight) * 100
+        ).toFixed(1)}% heavier than ${human.species}.`
+      : `At ${this.weight} pounds ${this.species} had ${parseFloat(
+          (this.weight / human.weight) * 100
+        ).toFixed(1)}% as much weight as ${human.species}.`;
+  };
+  this.compareHeight = function () {
+    let getFormattedHeight = function (heightInInches) {
+      return `${parseInt(heightInInches / 12)} ft. ${parseInt(
+        heightInInches % 12
+      )} in.`;
+    };
+    return this.height > human.height
+      ? `At ${getFormattedHeight(this.height)} ${
+          this.species
+        } was ${getFormattedHeight(
+          this.height - human.height
+        )} taller than you.`
+      : `At ${getFormattedHeight(this.height)} ${
+          this.species
+        } was ${getFormattedHeight(
+          human.height - this.height
+        )} taller than you.`;
+  };
 };
-
-const makeDinos = (dinoData) => {
+const makeDinos = (dinoData, human) => {
   const dinoArray = [];
 
   dinoData.Dinos.forEach((element) => {
@@ -21,9 +61,8 @@ const makeDinos = (dinoData) => {
       element.diet,
       element.where,
       element.when,
-      element.fact
-      // dino also has a path to it's image created by the constructor
-      // imagePath = `./images/${species}.png`.toLowerCase();
+      element.fact,
+      human
     );
     dinoArray.push(dino);
   });
@@ -36,7 +75,7 @@ const makeHuman = function (userInput) {
     feet: parseInt(userInput.feet),
     inches: parseInt(userInput.inches),
     weight: parseInt(userInput.weight),
-    diet: userInput.diet,
+    diet: userInput.diet.toLowerCase(),
     height: parseInt(userInput.feet) * 12 + parseInt(userInput.inches),
     imagePath: `./images/human.png`,
   };
@@ -44,17 +83,16 @@ const makeHuman = function (userInput) {
 };
 
 //add click listner to compare button
-(window.onload = () => {
+(() => {
   const compareBtn = document.getElementById('compare-btn');
-  console.log('compareBtn:', compareBtn);
   compareBtn.addEventListener('click', (e) => {
     const userInput = getFormData();
-    const human = makeHuman(userInput); // make human object from data submitted by user
-    toggleFormVisibility();
+    const humanObj = makeHuman(userInput); // make human object from data submitted by user
+    hideForm();
     const getDinoData = async () => fetchDinoJson();
-    getDinoData().then((res) => {
-      const dinoArray = makeDinos(res);
-      makeTiles(dinoArray, human);
+    getDinoData().then((response) => {
+      const dinoArray = makeDinos(response, humanObj);
+      makeTiles(dinoArray, humanObj);
     });
   });
 })();
@@ -83,15 +121,12 @@ const clearFormData = (formElements) => {
 async function fetchDinoJson() {
   const res = await fetch('./dino.json');
   const dinoData = await res.json();
-  console.log('dinoData from fetch:', dinoData);
   return dinoData;
 }
 
-const toggleFormVisibility = () => {
+const hideForm = () => {
   const form = document.getElementById('dino-compare');
-  form.style.display == ''
-    ? (form.style.display = 'none')
-    : (form.style.display = '');
+  form.style.display = 'none';
 };
 
 const makeTiles = (dinoArray, humanObj) => {
@@ -113,15 +148,25 @@ const makeTiles = (dinoArray, humanObj) => {
     tile.appendChild(tileImage).setAttribute('src', element.imagePath);
 
     const tileFact = document.createElement('p');
-    tileFact.innerHTML = element.fact;
     tile.appendChild(tileFact);
 
     if (element.fact === undefined) {
-      tileFact.style.display = 'none';
-    }
-
-    if (tileName === 'Pigeon') {
+      //Fact should only be undefiled for human
+      tileFact.style.display = 'none'; //human should not display a fact
+    } else if (tileName.innerHTML === 'Pigeon') {
+      //Pigeon should always have same fact.
       tileFact.innerHTML = 'All birds are dinosaurs.';
+    } else {
+      let randomFact = getRandomFact();
+      if (randomFact === 'compareHeight') {
+        tileFact.innerHTML = element.compareHeight();
+      } else if (randomFact === 'compareWeight') {
+        tileFact.innerHTML = element.compareWeight();
+      } else if (randomFact === 'compareDiet') {
+        tileFact.innerHTML = element.compareDiet();
+      } else {
+        tileFact.innerHTML = element[randomFact];
+      }
     }
   });
 };
@@ -130,9 +175,7 @@ const randomizeArray = (originalArray) => {
   const randomizedArray = [];
 
   while (originalArray.length > 0) {
-    const getRandomIndex = () =>
-      Math.floor(Math.random() * originalArray.length); //generate random index based on current length of array
-    const randomIndex = getRandomIndex();
+    const randomIndex = Math.floor(Math.random() * originalArray.length); //generate random index based on current length of array
     randomizedArray.push(originalArray[randomIndex]); //add value at index to new array
     originalArray.splice(randomIndex, 1); // remove value from old array. splice(index to remove, number of elements to remove)
   }
@@ -141,11 +184,16 @@ const randomizeArray = (originalArray) => {
 
 // Create Dino Compare Method 1
 // NOTE: Weight in JSON file is in lbs, height in inches.
-
-// Create Dino Compare Method 2
-// NOTE: Weight in JSON file is in lbs, height in inches.
-
-// Create Dino Compare Method 3
-// NOTE: Weight in JSON file is in lbs, height in inches.
-
-// TODO try to fix delay in hiding button when hiding form
+const getRandomFact = () => {
+  const factArray = [
+    'compareHeight',
+    'where',
+    'when',
+    'fact',
+    'compareDiet',
+    'compareWeight',
+  ];
+  const randomIndex = Math.floor(Math.random() * factArray.length);
+  const fact = factArray[randomIndex];
+  return fact;
+};
