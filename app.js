@@ -88,9 +88,8 @@ const makeHuman = function (userInput) {
   const compareBtn = document.getElementById('compare-btn');
   compareBtn.addEventListener('click', (e) => {
     const formElements = getFormElements();
-    //console.log('formElements:', formElements);
     const formValid = validateForm(formElements);
-    //console.log('formValid:', formValid);
+
     if (formValid) {
       const userInput = getFormData(formElements);
       const humanObj = makeHuman(userInput); // make human object from data submitted by user
@@ -163,11 +162,12 @@ const makeTiles = (dinoArray, humanObj) => {
     const tileFact = document.createElement('p');
     tile.appendChild(tileFact);
 
+    //human should not display a fact
+    //Fact should only be undefiled for human
     if (element.fact === undefined) {
-      //Fact should only be undefiled for human
-      tileFact.style.display = 'none'; //human should not display a fact
-    } else if (tileName.innerHTML === 'Pigeon') {
+      tileFact.style.display = 'none';
       //Pigeon should always have same fact.
+    } else if (tileName.innerHTML === 'Pigeon') {
       tileFact.innerHTML = 'All birds are dinosaurs.';
     } else {
       let randomFact = getRandomFact();
@@ -219,15 +219,8 @@ const validateForm = (formElements) => {
   let feet = formElements[1];
   let inches = formElements[2];
   let weight = formElements[3];
+  // TODO allow single character names
   let validName = /^\s*([A-Za-z]{1,}([\.,] |[-']| )?)+[A-Za-z]+\.?\s*$/; //allow spaces, hyphens, and apostrophes in name
-
-  const nameLabel = document.querySelector('.form-container > p:nth-child(1)');
-  const heightLabel = document.querySelector(
-    '.form-container > p:nth-child(3)'
-  );
-  const weightLabel = document.querySelector(
-    '.form-container > p:nth-child(6)'
-  );
 
   const updateValidationAlerts = function (element, fieldValid) {
     console.log('element:', element);
