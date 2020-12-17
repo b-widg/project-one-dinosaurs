@@ -176,3 +176,15 @@ select {
   display: block;
   font-size: 0.7em;
 }
+
+.validation-message {
+  color: red;
+  font-size: 0.9em;
+  font-weight: 50;
+  margin-bottom: 0.3em;
+  /* float: right; */
+}
+
+.display-none {
+  display: none;
+}

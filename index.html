@@ -30,14 +30,20 @@
     <form id="dino-compare">
       <div class="form-container">
         <p>Name:</p>
+        <div id="name-warning" class="validation-message display-none">
+          Name Required: Only letters, hyphens, & apostrophes
+        </div>
         <input id="name" class="form-field__full" type="name" name="name" />
-        <p>Height</p>
+        <p>Height:</p>
+        <div id="feet-warning" class="validation-message display-none">
+          Height Required: Max. Feet: 9, Max. Inches: 11
+        </div>
         <label
           >Feet:
           <input id="feet" class="form-field__short" type="number" name="feet"
         /></label>
         <label
-          >inches:
+          >Inches:
           <input
             id="inches"
             class="form-field__short"
@@ -45,6 +51,9 @@
             name="inches"
         /></label>
         <p>Weight:</p>
+        <div id="weight-warning" class="validation-message display-none">
+          Weight Required: Max. lbs: 999
+        </div>
         <label
           ><input
             id="weight"
