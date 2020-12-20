@@ -19,17 +19,17 @@ const Dino = function (
   this.imagePath = `./images/${species}.png`.toLowerCase();
   this.compareDiet = function () {
     return human.diet === this.diet
-      ? `${human.species} and ${this.species} are both ${this.diet}s.`
-      : `${human.species} is a ${human.diet}, but ${this.species} was a ${this.diet}.`;
+      ? `${human.name} and ${this.species} are both ${this.diet}s.`
+      : `${human.name} is a ${human.diet}, but ${this.species} was a ${this.diet}.`;
   };
   this.compareWeight = function () {
     return this.weight > human.weight
       ? `At ${this.weight} pounds ${this.species} was ${(
           parseFloat((this.weight - human.weight) / human.weight) * 100
-        ).toFixed(1)}% heavier than ${human.species}.`
+        ).toFixed(1)}% heavier than ${human.name}.`
       : `At ${this.weight} pounds ${this.species} had ${parseFloat(
           (this.weight / human.weight) * 100
-        ).toFixed(1)}% as much weight as ${human.species}.`;
+        ).toFixed(1)}% as much weight as ${human.name}.`;
   };
   this.compareHeight = function () {
     let getFormattedHeight = function (heightInInches) {
@@ -70,9 +70,10 @@ const makeDinos = (dinoData, human) => {
   return dinoArray;
 };
 
+// species: userInput.name,
 const makeHuman = function (userInput) {
   const human = {
-    species: userInput.name,
+    name: userInput.name,
     feet: parseInt(userInput.feet),
     inches: parseInt(userInput.inches),
     weight: parseInt(userInput.weight),
@@ -83,12 +84,12 @@ const makeHuman = function (userInput) {
   return human;
 };
 
-//add click listner to compare button
+//add click listner to the compare button
 (() => {
   const compareBtn = document.getElementById('compare-btn');
   compareBtn.addEventListener('click', (e) => {
     const formElements = getFormElements();
-    const formValid = validateForm(formElements);
+    const formValid = validateForm(formElements); //boolean - true when all form emements validate
 
     if (formValid) {
       const userInput = getFormData(formElements);
@@ -103,16 +104,16 @@ const makeHuman = function (userInput) {
   });
 })();
 
+// get array of all form elements and values
 const getFormElements = () => {
-  // get array of all form elements and values
   const formElements = Array.from(
     document.querySelectorAll('#dino-compare input, select')
   );
   return formElements;
 };
 
+// gather unser input from form values and place in array
 const getFormData = (formElements) => {
-  // gather unser input from form values and place in array
   const formData = formElements.reduce(
     (accumulator, currentVal) => ({
       ...accumulator,
@@ -120,9 +121,7 @@ const getFormData = (formElements) => {
     }),
     {} // initial value of accumulator is empty object
   );
-
   clearFormData(formElements); // clear form after info gathered
-
   return formData;
 };
 
@@ -138,7 +137,7 @@ async function fetchDinoJson() {
 
 const hideForm = () => {
   const form = document.getElementById('dino-compare');
-  form.style.display = 'none';
+  form.classList.add('display-none');
 };
 
 const makeTiles = (dinoArray, humanObj) => {
@@ -153,7 +152,7 @@ const makeTiles = (dinoArray, humanObj) => {
     tile.classList.add('grid-item');
 
     const tileName = document.createElement('h3');
-    tileName.innerHTML = element.species;
+    tileName.innerHTML = element.species ? element.species : element.name; // if element.species doesn't exist in object use name from human.
     tile.appendChild(tileName);
 
     const tileImage = document.createElement('img');
@@ -166,10 +165,12 @@ const makeTiles = (dinoArray, humanObj) => {
     //Fact should only be undefiled for human
     if (element.fact === undefined) {
       tileFact.style.display = 'none';
-      //Pigeon should always have same fact.
+      //Pigeon should always have same fact: 'All birds are dinosaurs.'
     } else if (tileName.innerHTML === 'Pigeon') {
       tileFact.innerHTML = 'All birds are dinosaurs.';
     } else {
+      // 3 of the random facts return the results of methods comparing dinosaurs to the user,
+      // that need to be called. The rest are just strings.
       let randomFact = getRandomFact();
       if (randomFact === 'compareHeight') {
         tileFact.innerHTML = element.compareHeight();
@@ -184,6 +185,7 @@ const makeTiles = (dinoArray, humanObj) => {
   });
 };
 
+// creats new array.  Destroys data in the original array in the process.
 const randomizeArray = (originalArray) => {
   const randomizedArray = [];
 
@@ -210,7 +212,7 @@ const getRandomFact = () => {
 };
 
 /*
- * Form Validation
+  Form Validation
  */
 
 const validateForm = (formElements) => {
@@ -223,85 +225,53 @@ const validateForm = (formElements) => {
   let validName = /^\s*([A-Za-z]{1,}([\.,] |[-']| )?)+[A-Za-z]+\.?\s*$/; //allow spaces, hyphens, and apostrophes in name
 
   const updateValidationAlerts = function (element, fieldValid) {
-    console.log('element:', element);
-    console.log('fieldValid:', fieldValid);
-    let warningId = element.id;
-    let validFeet = false;
-    let validInches = false;
+    //let warningId = element.id;
 
     if (!fieldValid) {
       element.style.border = '1px dashed red';
       element.value = '';
-
-      // inches element shares same validation warning with feet.  Should be visible if either does not validate.
-      if (element.id === 'inches') {
-        warningId = 'feet';
-      }
       document
-        .querySelector(`#${warningId}-warning`)
-        .classList.remove('display-none');
+        .querySelector(`#${element.id}-warning`) //the warning messages have standard format for their IDs.
+        .classList.remove('display-none'); // make warning message visible
       valid = false;
     } else {
-      //let warningId = element.id;
-      if (element.id === 'inches') {
-        warningId = 'feet';
-      }
       document
-        .querySelector(`#${warningId}-warning`)
+        .querySelector(`#${element.id}-warning`)
         .classList.add('display-none');
       element.style.border = 'none';
       element.style.color = 'black';
-      // by default warning is hidden if either feet or inches validate.
-      // if either doesn't validate warning needs to be returned to visible.
-      if (element.id === 'feet') {
-        console.log('element.id feet:', element.id);
-        console.log('element.id === feet:', element.id === 'feet');
-        validFeet = true;
-      }
-      if (element.id === 'inches') {
-        console.log('element.id inches:', element.id);
-        console.log('element.id === inches:', element.id === 'inches');
-        validInches = true;
-      }
-      if (validFeet && validInches) {
-        document
-          .querySelector(`#feet-warning`)
-          .classList.remove('display-none');
-        valid = false;
-      }
     }
   };
-
-  if (!name.value.match(validName) || name.value == '') {
+  if (!name.value.match(validName) || name.value === '') {
     updateValidationAlerts(name, false);
   } else {
     updateValidationAlerts(name, true);
   }
   if (
-    feet.value == NaN ||
+    feet.value === NaN ||
     feet.value <= 0 ||
     feet.value > 9 ||
-    feet.value == ''
+    feet.value === ''
   ) {
     updateValidationAlerts(feet, false);
   } else {
     updateValidationAlerts(feet, true);
   }
   if (
-    inches.value == NaN ||
-    inches.value <= 0 ||
+    inches.value === NaN ||
+    inches.value < 0 ||
     inches.value >= 12 ||
-    inches.value == ''
+    inches.value === ''
   ) {
     updateValidationAlerts(inches, false);
   } else {
     updateValidationAlerts(inches, true);
   }
   if (
-    weight.value == NaN ||
+    weight.value === NaN ||
     weight.value <= 0 ||
     weight.value >= 1000 ||
-    weight.value == ''
+    weight.value === ''
   ) {
     updateValidationAlerts(weight, false);
   } else {
