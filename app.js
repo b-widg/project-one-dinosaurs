@@ -181,12 +181,15 @@ const toggleVisibility = (elementArray) => {
 const makeTiles = (dinoArray, humanObj) => {
   const tileDataArray = randomizeArray(dinoArray);
   tileDataArray.splice(4, 0, humanObj); // after randomizing dino objects, add human object in 5th position
+  const backgroundColors = getRandomColor();
+  console.log('backgroundColors:', backgroundColors);
 
   const grid = document.getElementById('grid');
 
-  tileDataArray.forEach((element) => {
+  tileDataArray.forEach((element, index) => {
     const tile = document.createElement('div');
     tile.classList.add('grid-item');
+    tile.style.backgroundColor = backgroundColors[index];
     grid.appendChild(tile);
 
     const tileName = document.createElement('h3');
@@ -203,9 +206,9 @@ const makeTiles = (dinoArray, humanObj) => {
     //Fact should only be undefiled for human
     if (!element.fact) {
       tileFact.style.display = 'none';
-      //Pigeon should always have same fact: 'All birds are considered dinosaurs.'
+      //Pigeon should always have same fact: 'All birds are dinosaurs.'
     } else if (tileName.innerHTML === 'Pigeon') {
-      tileFact.innerHTML = 'All birds are considered dinosaurs.';
+      tileFact.innerHTML = 'All birds are dinosaurs.';
     } else {
       // 3 of the random facts return the results of methods comparing dinosaurs
       // to the user that need to be called. The rest are passed as strings.
@@ -228,7 +231,6 @@ const makeTiles = (dinoArray, humanObj) => {
     tile.appendChild(overlay);
 
     const title = document.createElement('h3');
-
     overlay.appendChild(title);
     title.innerHTML = element.species
       ? `${element.species} Facts`
@@ -306,6 +308,23 @@ const getRandomFact = () => {
   const randomIndex = Math.floor(Math.random() * factArray.length);
   const fact = factArray[randomIndex];
   return fact;
+};
+
+// Randomize order colors to be used as tile backgrounds. Returns array of hex strings.
+const getRandomColor = () => {
+  const colorArray = [
+    '#009687f5',
+    '#dc7657f5',
+    '#4bb3c1fa',
+    '#fac069f9',
+    '#67a866f9',
+    '#b94169fa',
+    '#7f62b3fa',
+    '#9fc376f9',
+    '#677bcbfa',
+  ];
+  const randomizedColors = randomizeArray(colorArray);
+  return randomizedColors;
 };
 
 // Form Validation
