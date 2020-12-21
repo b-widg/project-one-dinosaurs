@@ -32,11 +32,6 @@ const Dino = function (
         ).toFixed(1)}% as much weight as ${human.name}.`;
   };
   this.compareHeight = function () {
-    let getFormattedHeight = function (heightInInches) {
-      return `${parseInt(heightInInches / 12)} ft. ${parseInt(
-        heightInInches % 12
-      )} in.`;
-    };
     return this.height > human.height
       ? `At ${getFormattedHeight(this.height)} ${
           this.species
@@ -70,10 +65,9 @@ const makeDinos = (dinoData, human) => {
   return dinoArray;
 };
 
-// species: userInput.name,
 const makeHuman = function (userInput) {
   const human = {
-    name: userInput.name,
+    name: capitalizeNames(userInput.name),
     feet: parseInt(userInput.feet),
     inches: parseInt(userInput.inches),
     weight: parseInt(userInput.weight),
@@ -82,6 +76,22 @@ const makeHuman = function (userInput) {
     imagePath: `./images/human.png`,
   };
   return human;
+};
+
+const capitalizeNames = (userNames) => {
+  return userNames
+    .toLowerCase()
+    .split(' ')
+    .map((userName) => {
+      return userName[0].toUpperCase() + userName.substring(1);
+    })
+    .join(' ');
+};
+
+const getFormattedHeight = (heightInInches) => {
+  return `${parseInt(heightInInches / 12)} ft. ${parseInt(
+    heightInInches % 12
+  )} in.`;
 };
 
 //add click listner to the compare button
@@ -148,8 +158,8 @@ const makeTiles = (dinoArray, humanObj) => {
 
   tileDataArray.forEach((element) => {
     const tile = document.createElement('div');
-    grid.appendChild(tile);
     tile.classList.add('grid-item');
+    grid.appendChild(tile);
 
     const tileName = document.createElement('h3');
     tileName.innerHTML = element.species ? element.species : element.name; // if element.species doesn't exist in object use name from human.
@@ -163,7 +173,7 @@ const makeTiles = (dinoArray, humanObj) => {
 
     //human should not display a fact
     //Fact should only be undefiled for human
-    if (element.fact === undefined) {
+    if (!element.fact) {
       tileFact.style.display = 'none';
       //Pigeon should always have same fact: 'All birds are dinosaurs.'
     } else if (tileName.innerHTML === 'Pigeon') {
@@ -181,6 +191,58 @@ const makeTiles = (dinoArray, humanObj) => {
       } else {
         tileFact.innerHTML = element[randomFact];
       }
+    }
+
+    const overlay = document.createElement('div');
+    overlay.classList.add('overlay');
+    tile.appendChild(overlay);
+
+    const title = document.createElement('h3');
+    overlay.classList.add('overlay-content');
+    overlay.appendChild(title);
+    title.innerHTML = element.species
+      ? `${element.species} Facts`
+      : `${element.name} Facts`;
+
+    const factList = document.createElement('ul');
+    overlay.classList.add('.overlay-content');
+    overlay.appendChild(factList);
+
+    let listFact = document.createElement('li');
+    listFact.innerHTML = `Weight: ${element.weight} lbs.`;
+    overlay.appendChild(listFact);
+
+    listFact = document.createElement('li');
+    listFact.innerHTML = `Height: ${getFormattedHeight(element.height)} high`;
+    overlay.appendChild(listFact);
+
+    listFact = document.createElement('li');
+    listFact.innerHTML = `Diet: ${element.diet}`;
+    overlay.appendChild(listFact);
+
+    if (element.where) {
+      listFact = document.createElement('li');
+      if (element.species === 'Pigeon') {
+        listFact.innerHTML = 'Pigeons are found world wide.';
+      } else {
+        listFact.innerHTML = element.where;
+      }
+      overlay.appendChild(listFact);
+    }
+    if (element.when) {
+      listFact = document.createElement('li');
+      if (element.species === 'Pigeon') {
+        listFact.innerHTML = 'Pigeons live in the current epoch.';
+      } else {
+        listFact.innerHTML = element.when;
+      }
+      overlay.appendChild(listFact);
+    }
+
+    if (element.fact) {
+      listFact = document.createElement('li');
+      listFact.innerHTML = element.fact;
+      overlay.appendChild(listFact);
     }
   });
 };
@@ -225,8 +287,6 @@ const validateForm = (formElements) => {
   let validName = /^\s*([A-Za-z]{1,}([\.,] |[-']| )?)+[A-Za-z]+\.?\s*$/; //allow spaces, hyphens, and apostrophes in name
 
   const updateValidationAlerts = function (element, fieldValid) {
-    //let warningId = element.id;
-
     if (!fieldValid) {
       element.style.border = '1px dashed red';
       element.value = '';

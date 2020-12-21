@@ -182,9 +182,45 @@ select {
   font-size: 0.9em;
   font-weight: 50;
   margin-bottom: 0.3em;
-  /* float: right; */
 }
 
 .display-none {
   display: none;
+}
+
+.overlay {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  background-color: #0008;
+  overflow: hidden;
+  min-width: 100%;
+  height: 0;
+  transition: 0.25s ease-in;
+  -webkit-transition: 0.25s ease-in;
+  -moz-transition: 0.25s ease-in;
+  -ms-transition: 0.25s ease-in;
+  -o-transition: 0.25s ease-in;
+}
+
+.overlay h3 {
+  color: yellow;
+}
+
+.grid-item:hover .overlay {
+  bottom: 0;
+  height: 100%;
+}
+
+.overlay-content {
+  color: yellow;
+  font-size: 1rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  text-align: center;
 }
