@@ -1,4 +1,4 @@
-# You Vs. The Dinosaurs
+# You vs. the Dinosaurs
 
 ## Project 1 for Udacity, Intermediate Javascript Nanodegree
 
