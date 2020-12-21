@@ -182,7 +182,6 @@ const makeTiles = (dinoArray, humanObj) => {
   const tileDataArray = randomizeArray(dinoArray);
   tileDataArray.splice(4, 0, humanObj); // after randomizing dino objects, add human object in 5th position
   const backgroundColors = getRandomColor();
-  console.log('backgroundColors:', backgroundColors);
 
   const grid = document.getElementById('grid');
 
