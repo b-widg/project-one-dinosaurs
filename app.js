@@ -203,9 +203,9 @@ const makeTiles = (dinoArray, humanObj) => {
     //Fact should only be undefiled for human
     if (!element.fact) {
       tileFact.style.display = 'none';
-      //Pigeon should always have same fact: 'All birds are dinosaurs.'
+      //Pigeon should always have same fact: 'All birds are considered dinosaurs.'
     } else if (tileName.innerHTML === 'Pigeon') {
-      tileFact.innerHTML = 'All birds are dinosaurs.';
+      tileFact.innerHTML = 'All birds are considered dinosaurs.';
     } else {
       // 3 of the random facts return the results of methods comparing dinosaurs
       // to the user that need to be called. The rest are passed as strings.
