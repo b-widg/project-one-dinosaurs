@@ -1,4 +1,5 @@
-// Create Dino Constructor
+// Dino Constructor
+// Human is object that is needed for values used in dino methods
 const Dino = function (
   species,
   weight,
@@ -46,6 +47,8 @@ const Dino = function (
   };
 };
 
+// Create array of dino objects from json data.  Also takes human ohject
+// to use in methods comparing dinos and human facts.
 const makeDinos = (dinoData, human) => {
   const dinoArray = [];
 
@@ -65,7 +68,8 @@ const makeDinos = (dinoData, human) => {
   return dinoArray;
 };
 
-const makeHuman = function (userInput) {
+// build human object from info user enters on form
+const makeHuman = (userInput) => {
   const human = {
     name: capitalizeNames(userInput.name),
     feet: parseInt(userInput.feet),
@@ -78,6 +82,7 @@ const makeHuman = function (userInput) {
   return human;
 };
 
+// format user's name(s) with capitol first letter
 const capitalizeNames = (userNames) => {
   return userNames
     .toLowerCase()
@@ -88,6 +93,7 @@ const capitalizeNames = (userNames) => {
     .join(' ');
 };
 
+// return heigt in feet and inches
 const getFormattedHeight = (heightInInches) => {
   return `${parseInt(heightInInches / 12)} ft. ${parseInt(
     heightInInches % 12
@@ -97,20 +103,32 @@ const getFormattedHeight = (heightInInches) => {
 //add click listner to the compare button
 (() => {
   const compareBtn = document.getElementById('compare-btn');
+  const introHeader = document.getElementById('intro-header');
+  const form = document.getElementById('dino-compare');
+  const pageRefresh = document.getElementById('page-refresh');
+
   compareBtn.addEventListener('click', (e) => {
     const formElements = getFormElements();
     const formValid = validateForm(formElements); //boolean - true when all form emements validate
 
     if (formValid) {
+      toggleVisibility([introHeader, form, pageRefresh]); // remove header and form, add pageRFefresh
       const userInput = getFormData(formElements);
       const humanObj = makeHuman(userInput); // make human object from data submitted by user
-      hideForm();
       const getDinoData = async () => fetchDinoJson();
       getDinoData().then((response) => {
         const dinoArray = makeDinos(response, humanObj);
         makeTiles(dinoArray, humanObj);
       });
     }
+  });
+})();
+
+// event listener to for the refresh icon to reload the page.
+(() => {
+  const refreshIcon = document.getElementById('refresh-icon');
+  refreshIcon.addEventListener('click', (e) => {
+    location.reload();
   });
 })();
 
@@ -131,25 +149,35 @@ const getFormData = (formElements) => {
     }),
     {} // initial value of accumulator is empty object
   );
-  clearFormData(formElements); // clear form after info gathered
+  clearFormData(formElements); // Clear form after info gathered
   return formData;
 };
 
+// Will clear all user entered data on form
 const clearFormData = (formElements) => {
   formElements.forEach((element) => (element.value = ''));
 };
 
+// Fetch dino data from json file
 async function fetchDinoJson() {
   const res = await fetch('./dino.json');
   const dinoData = await res.json();
   return dinoData;
 }
 
-const hideForm = () => {
-  const form = document.getElementById('dino-compare');
-  form.classList.add('display-none');
+// Hides single or multiple page elements.  Elements need to be
+// passed as array even if only a single element.
+const toggleVisibility = (elementArray) => {
+  elementArray.map((element) => {
+    if (element.classList.contains('display-none')) {
+      element.classList.remove('display-none');
+    } else {
+      element.classList.add('display-none');
+    }
+  });
 };
 
+// Makes Infograpgic of dino tiles as well as fact overlays that appear on hover.
 const makeTiles = (dinoArray, humanObj) => {
   const tileDataArray = randomizeArray(dinoArray);
   tileDataArray.splice(4, 0, humanObj); // after randomizing dino objects, add human object in 5th position
@@ -162,7 +190,7 @@ const makeTiles = (dinoArray, humanObj) => {
     grid.appendChild(tile);
 
     const tileName = document.createElement('h3');
-    tileName.innerHTML = element.species ? element.species : element.name; // if element.species doesn't exist in object use name from human.
+    tileName.innerHTML = element.species ? element.species : element.name; // If element.species doesn't exist in object use name from human.
     tile.appendChild(tileName);
 
     const tileImage = document.createElement('img');
@@ -179,8 +207,8 @@ const makeTiles = (dinoArray, humanObj) => {
     } else if (tileName.innerHTML === 'Pigeon') {
       tileFact.innerHTML = 'All birds are dinosaurs.';
     } else {
-      // 3 of the random facts return the results of methods comparing dinosaurs to the user,
-      // that need to be called. The rest are just strings.
+      // 3 of the random facts return the results of methods comparing dinosaurs
+      // to the user that need to be called. The rest are passed as strings.
       let randomFact = getRandomFact();
       if (randomFact === 'compareHeight') {
         tileFact.innerHTML = element.compareHeight();
@@ -192,57 +220,63 @@ const makeTiles = (dinoArray, humanObj) => {
         tileFact.innerHTML = element[randomFact];
       }
     }
-
+    // Create overlays to show all facts on hover.
     const overlay = document.createElement('div');
+
     overlay.classList.add('overlay');
+    overlay.classList.add('overlay-content');
     tile.appendChild(overlay);
 
     const title = document.createElement('h3');
-    overlay.classList.add('overlay-content');
+
     overlay.appendChild(title);
     title.innerHTML = element.species
       ? `${element.species} Facts`
       : `${element.name} Facts`;
 
     const factList = document.createElement('ul');
-    overlay.classList.add('.overlay-content');
+
     overlay.appendChild(factList);
 
-    let listFact = document.createElement('li');
-    listFact.innerHTML = `Weight: ${element.weight} lbs.`;
-    overlay.appendChild(listFact);
+    let factItem = document.createElement('li');
+    factItem.innerHTML = `Weight: ${element.weight} lbs.`;
+    factList.appendChild(factItem);
 
-    listFact = document.createElement('li');
-    listFact.innerHTML = `Height: ${getFormattedHeight(element.height)} high`;
-    overlay.appendChild(listFact);
+    factItem = document.createElement('li');
+    factItem.innerHTML = `Height: ${getFormattedHeight(element.height)} high`;
+    factList.appendChild(factItem);
 
-    listFact = document.createElement('li');
-    listFact.innerHTML = `Diet: ${element.diet}`;
-    overlay.appendChild(listFact);
+    factItem = document.createElement('li');
+    factItem.innerHTML = `Diet: ${element.diet}`;
+    factList.appendChild(factItem);
+
+    // the last three facts return undefined for the human,
+    // so checking to see if they exist before attempting to
+    // creeate list items for them.
 
     if (element.where) {
-      listFact = document.createElement('li');
+      factItem = document.createElement('li');
       if (element.species === 'Pigeon') {
-        listFact.innerHTML = 'Pigeons are found world wide.';
+        factItem.innerHTML = 'Pigeons are found world wide.';
       } else {
-        listFact.innerHTML = element.where;
+        factItem.innerHTML = element.where;
       }
-      overlay.appendChild(listFact);
+      factList.appendChild(factItem);
     }
     if (element.when) {
-      listFact = document.createElement('li');
+      factItem = document.createElement('li');
       if (element.species === 'Pigeon') {
-        listFact.innerHTML = 'Pigeons live in the current epoch.';
+        factItem.innerHTML = 'Pigeons live in the current epoch.';
       } else {
-        listFact.innerHTML = element.when;
+        factItem.innerHTML = element.when;
       }
-      overlay.appendChild(listFact);
+      factList.appendChild(factItem);
     }
 
     if (element.fact) {
       listFact = document.createElement('li');
       listFact.innerHTML = element.fact;
-      overlay.appendChild(listFact);
+      factList.appendChild(listFact);
     }
   });
 };
@@ -259,12 +293,13 @@ const randomizeArray = (originalArray) => {
   return randomizedArray;
 };
 
+// return random fact to be desplayed in bottom of dino tile
 const getRandomFact = () => {
   const factArray = [
-    'compareHeight',
     'where',
     'when',
     'fact',
+    'compareHeight',
     'compareDiet',
     'compareWeight',
   ];
@@ -273,35 +308,34 @@ const getRandomFact = () => {
   return fact;
 };
 
-/*
-  Form Validation
- */
-
+// Form Validation
+// When data is invalid, removes invalid data, highlights field, and displays warning message to user.
+// Returns true when all fields contail valid data.
 const validateForm = (formElements) => {
   let valid = true;
   let name = formElements[0];
   let feet = formElements[1];
   let inches = formElements[2];
   let weight = formElements[3];
-  // TODO allow single character names
   let validName = /^\s*([A-Za-z]{1,}([\.,] |[-']| )?)+[A-Za-z]+\.?\s*$/; //allow spaces, hyphens, and apostrophes in name
 
-  const updateValidationAlerts = function (element, fieldValid) {
+  //Don't use toggleVisibility() here. Class 'display-none' needs to be explicity
+  //added or removed for validationWarning for each element passed in.
+  const updateValidationAlerts = (element, fieldValid) => {
+    const validationWarning = document.querySelector(`#${element.id}-warning`);
+
     if (!fieldValid) {
       element.style.border = '1px dashed red';
       element.value = '';
-      document
-        .querySelector(`#${element.id}-warning`) //the warning messages have standard format for their IDs.
-        .classList.remove('display-none'); // make warning message visible
+      validationWarning.classList.remove('display-none');
       valid = false;
     } else {
-      document
-        .querySelector(`#${element.id}-warning`)
-        .classList.add('display-none');
       element.style.border = 'none';
       element.style.color = 'black';
+      validationWarning.classList.add('display-none');
     }
   };
+
   if (!name.value.match(validName) || name.value === '') {
     updateValidationAlerts(name, false);
   } else {

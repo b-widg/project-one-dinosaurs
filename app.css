@@ -184,6 +184,11 @@ select {
   margin-bottom: 0.3em;
 }
 
+/*
+.display-none should not be altered.  It is used
+by toggleVisibility() function to hide and display
+several elements.
+*/
 .display-none {
   display: none;
 }
@@ -213,6 +218,11 @@ select {
   height: 100%;
 }
 
+.overlay > ul {
+  list-style-position: inside;
+  padding: 1rem;
+}
+
 .overlay-content {
   color: yellow;
   font-size: 1rem;
@@ -223,4 +233,22 @@ select {
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   text-align: center;
+}
+
+#refresh-icon {
+  max-width: 4.5rem;
+  background-color: #3333;
+  border: #000 solid 0.1rem;
+  display: inline;
+  transition: ease 0.3s all;
+  border-radius: 0.5rem;
+  -webkit-border-radius: 0.5rem;
+  -moz-border-radius: 0.5rem;
+  -ms-border-radius: 0.5rem;
+  -o-border-radius: 0.5rem;
+}
+
+#refresh-icon:hover {
+  background-color: #fff8;
+  cursor: pointer;
 }
