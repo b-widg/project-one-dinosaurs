@@ -294,7 +294,7 @@ const randomizeArray = (originalArray) => {
   return randomizedArray;
 };
 
-// return random fact to be desplayed in bottom of dino tile
+// Return random fact to be displayed in bottom of dino tile
 const getRandomFact = () => {
   const factArray = [
     'where',
