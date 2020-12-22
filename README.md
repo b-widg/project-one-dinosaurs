@@ -12,21 +12,21 @@ Build an infographic based on data in provided json file and data submitted with
 
 UI must show the following:
 
-- [ ] The form should contain a button which upon clicking, removes the form
-- [ ] The button should append a grid with 9 tiles to the DOM with the Human located in the center
-- [ ] The Human tile should display the name of the person and an image, the dino tiles should contain the species, an image and a fact, the bird title should contain the species, image, and "All birds are Dinosaurs."
+- The form should contain a button which upon clicking, removes the form
+- The button should append a grid with 9 tiles to the DOM with the Human located in the center
+- The Human tile should display the name of the person and an image, the dino tiles should contain the species, an image and a fact, the bird title should contain the species, image, and "All birds are Dinosaurs."
 
 To complete this project, your backend code must:
 
-- [ ] Contain a class and all necessary objects
-- [ ] Contain at least 3 methods for comparing dinosaurs to the human
-- [ ] Get user data from the DOM
-- [ ] Append tiles with object data to DOM
+- Contain a class and all necessary objects
+- Contain at least 3 methods for comparing dinosaurs to the human
+- Get user data from the DOM
+- Append tiles with object data to DOM
 
 ### Optional Features Included
 
-- [ ] Display Dinosaurs in random order
-- [ ] Allow user to resubmit form displaying new order and random facts
-- [ ] Add form validation to alert user to missing or invalid data before alowing form submission
-- [ ] Add overlays to tiles that display all facts on hover
-- [ ] Removed tile background color from CSS and use them in random order when creating tiles
+- Display Dinosaurs in random order
+- Allow user to resubmit form displaying new order and random facts
+- Add form validation to alert user to missing or invalid data before alowing form submission
+- Add overlays to tiles that display all facts on hover
+- Removed tile background color from CSS and use them in random order when creating tiles
