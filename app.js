@@ -159,11 +159,11 @@ const clearFormData = (formElements) => {
 };
 
 // Fetch dino data from json file
-async function fetchDinoJson() {
+const fetchDinoJson = async () => {
   const res = await fetch('./dino.json');
   const dinoData = await res.json();
   return dinoData;
-}
+};
 
 // Hides single or multiple page elements.  Elements need to be
 // passed as array even if only a single element.
@@ -355,9 +355,9 @@ const validateForm = (formElements) => {
   };
 
   if (!name.value.match(validName) || name.value === '') {
-    updateValidationAlerts(name, false);
+    updateValidationAlerts(name, false); // doesn't validate
   } else {
-    updateValidationAlerts(name, true);
+    updateValidationAlerts(name, true); // validates
   }
   if (
     feet.value === NaN ||
@@ -365,9 +365,9 @@ const validateForm = (formElements) => {
     feet.value > 9 ||
     feet.value === ''
   ) {
-    updateValidationAlerts(feet, false);
+    updateValidationAlerts(feet, false); // doesn't validate
   } else {
-    updateValidationAlerts(feet, true);
+    updateValidationAlerts(feet, true); // validates
   }
   if (
     inches.value === NaN ||
@@ -375,9 +375,9 @@ const validateForm = (formElements) => {
     inches.value >= 12 ||
     inches.value === ''
   ) {
-    updateValidationAlerts(inches, false);
+    updateValidationAlerts(inches, false); // doesn't validate
   } else {
-    updateValidationAlerts(inches, true);
+    updateValidationAlerts(inches, true); // validates
   }
   if (
     weight.value === NaN ||
@@ -385,9 +385,9 @@ const validateForm = (formElements) => {
     weight.value >= 1000 ||
     weight.value === ''
   ) {
-    updateValidationAlerts(weight, false);
+    updateValidationAlerts(weight, false); // doesn't validate
   } else {
-    updateValidationAlerts(weight, true);
+    updateValidationAlerts(weight, true); // validates
   }
 
   return valid ? true : false;
