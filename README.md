@@ -6,7 +6,7 @@
 
 Starter code and full instructions for the project are located at https://github.com/udacity/Javascript.
 
-Build an infographic based on data that is provided in provided json file and data submitted with a user form. Generate a 3x3 grid of tiles with the human in the center tile. Each title will contain the species, an image, and a fact. For the human tile, display the name of the human rather than species. The human does not desplay a fact by default. When the user clicks to generate the infographic from the form, remoove the form and show the grid. The facts displayed should be random per dinosaur with an opportunity of displaying at least 6 different types of facts -- 3 should be from the methods you create comparing the user provided info to the dinosaurs. One of the titles should be for a pigeon in which the tile should always display, “All birds are dinosaurs.”
+Build an infographic based on data in provided json file and data submitted with a user form. Generate a 3x3 grid of tiles with the human in the center tile. Each title will contain the species, an image, and a fact. For the human tile, display the name of the human rather than species. The human tile does not desplay a fact by default. When the user clicks to generate the infographic from the form, remove the form and show the grid. The facts displayed should be random per dinosaur with the ability to display at least 6 different types of facts -- 3 should be from the methods created comparing the user provided info to the dinosaurs. One of the titles should be for a pigeon in which the tile should always display, “All birds are dinosaurs.”
 
 ### Project Requirements
 
